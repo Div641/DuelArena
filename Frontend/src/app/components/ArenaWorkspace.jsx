@@ -9,7 +9,9 @@ export default function ArenaWorkspace({
   onDuelSubmit,
   isLoading,
   battleResult,
-  errorMessage
+  errorMessage,
+  isAuthenticated = false,
+  onNavigate
 }) {
   if (!show) return null;
 
@@ -35,31 +37,49 @@ export default function ArenaWorkspace({
         </button>
       </div>
 
-      {/* Form with 2-way data binding */}
-      <form onSubmit={onDuelSubmit} className="space-y-4">
-        <div>
-          <label className="block font-display font-bold uppercase tracking-wider text-xs text-black dark:text-white mb-2">
-            Enter Coding Query / Problem Statement
-          </label>
-          <div className="relative">
-            <input
-              type="text"
-              value={promptInput}
-              onChange={(e) => onPromptChange(e.target.value)} // 2-way binding update
-              placeholder="e.g. Write a bubble sort function in JavaScript"
-              className="w-full pl-4 pr-14 py-4 bg-white dark:bg-slate-900 text-black dark:text-white border-[3px] border-black dark:border-white focus:outline-none focus:bg-[#FAF9F5] dark:focus:bg-slate-800 text-sm font-semibold"
-              disabled={isLoading}
-            />
-            <button
-              type="submit"
-              className="absolute right-2 top-2 p-2 border-2 border-black dark:border-white bg-[#5CA1E6] text-black hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[2px_2px_0px_0px_#000] transition cursor-pointer disabled:opacity-50"
-              disabled={isLoading}
-            >
-              <ArrowRight className="w-5 h-5" />
-            </button>
-          </div>
+      {/* Form with 2-way data binding, visible only when Authenticated */}
+      {!isAuthenticated ? (
+        <div className="text-center py-12 border-[3px] border-dashed border-black dark:border-white p-6 bg-slate-50 dark:bg-slate-900/40 flex flex-col items-center justify-center space-y-4">
+          <span className="text-5xl">🔒</span>
+          <h4 className="font-display font-black text-xl uppercase tracking-wider text-black dark:text-white">
+            Workspace Locked
+          </h4>
+          <p className="font-serif italic text-sm text-slate-600 dark:text-slate-400 max-w-md">
+            The Competitive Coding Duel Arena is a restricted zone. You must create an account or sign in to execute agentic comparison code.
+          </p>
+          <button
+            onClick={() => onNavigate('register')}
+            className="px-5 py-2.5 bg-[#5CA1E6] text-black border-2 border-black font-black text-xs uppercase tracking-wide shadow-[3px_3px_0px_0px_#000] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[5px_5px_0px_0px_#000] cursor-pointer transition-all duration-150"
+          >
+            Create Account / Register
+          </button>
         </div>
-      </form>
+      ) : (
+        <form onSubmit={onDuelSubmit} className="space-y-4">
+          <div>
+            <label className="block font-display font-bold uppercase tracking-wider text-xs text-black dark:text-white mb-2">
+              Enter Coding Query / Problem Statement
+            </label>
+            <div className="relative">
+              <input
+                type="text"
+                value={promptInput}
+                onChange={(e) => onPromptChange(e.target.value)} // 2-way binding update
+                placeholder="e.g. Write a bubble sort function in JavaScript"
+                className="w-full pl-4 pr-14 py-4 bg-white dark:bg-slate-900 text-black dark:text-white border-[3px] border-black dark:border-white focus:outline-none focus:bg-[#FAF9F5] dark:focus:bg-slate-800 text-sm font-semibold"
+                disabled={isLoading}
+              />
+              <button
+                type="submit"
+                className="absolute right-2 top-2 p-2 border-2 border-black dark:border-white bg-[#5CA1E6] text-black hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[2px_2px_0px_0px_#000] transition cursor-pointer disabled:opacity-50"
+                disabled={isLoading}
+              >
+                <ArrowRight className="w-5 h-5" />
+              </button>
+            </div>
+          </div>
+        </form>
+      )}
 
       {/* Error Message */}
       {errorMessage && (

@@ -13,11 +13,11 @@ export default function DocModal({ isOpen, onClose }) {
       />
       
       {/* Modal Container */}
-      <div className="relative w-full max-w-2xl max-h-[85vh] overflow-y-auto rounded-none bg-white dark:bg-slate-900 border-[3px] border-black dark:border-white p-6 sm:p-8 shadow-[8px_8px_0px_0px_#000] dark:shadow-[8px_8px_0px_0px_#fff] text-black dark:text-white flex flex-col gap-6 animate-scale-up z-10">
+      <div className="relative w-full max-w-2xl max-h-[85vh] overflow-y-auto rounded-none bg-white dark:bg-slate-900 border-[3px] border-black dark:border-white p-6 sm:p-8 shadow-[8px_8px_0px_0px_#000] dark:shadow-[8px_8px_0px_0px_#fff] text-black dark:text-white flex flex-col gap-6 animate-scale-up z-10 font-mono">
         
         {/* Header */}
         <div className="flex items-center justify-between border-b-3 border-black dark:border-white pb-4">
-          <h2 className="font-display text-2xl font-black uppercase tracking-tight flex items-center gap-2">
+          <h2 className="text-xl font-bold uppercase tracking-tight flex items-center gap-2">
             <BookOpen className="w-6 h-6 text-[#5CA1E6]" />
             DuelArena System Architecture
           </h2>
@@ -30,10 +30,10 @@ export default function DocModal({ isOpen, onClose }) {
         </div>
 
         {/* Content */}
-        <div className="space-y-6 text-sm leading-relaxed overflow-y-auto pr-1">
+        <div className="space-y-6 text-sm leading-[1.85] overflow-y-auto pr-1">
           
           <div>
-            <h4 className="font-display font-black uppercase text-base flex items-center gap-1.5 border-b-2 border-black dark:border-white pb-1">
+            <h4 className="font-bold uppercase text-base flex items-center gap-1.5 border-b-2 border-black dark:border-white pb-1">
               <CheckCircle className="w-5 h-5 text-emerald-500" />
               Introduction
             </h4>
@@ -43,7 +43,7 @@ export default function DocModal({ isOpen, onClose }) {
           </div>
 
           <div>
-            <h4 className="font-display font-black uppercase text-base flex items-center gap-1.5 border-b-2 border-black dark:border-white pb-1">
+            <h4 className="font-bold uppercase text-base flex items-center gap-1.5 border-b-2 border-black dark:border-white pb-1">
               <Terminal className="w-5 h-5 text-[#5CA1E6]" />
               LangGraph Pipeline Nodes
             </h4>
@@ -58,7 +58,7 @@ export default function DocModal({ isOpen, onClose }) {
           </div>
 
           <div>
-            <h4 className="font-display font-black uppercase text-base flex items-center gap-1.5 border-b-2 border-black dark:border-white pb-1">
+            <h4 className="font-bold uppercase text-base flex items-center gap-1.5 border-b-2 border-black dark:border-white pb-1">
               <Layers className="w-5 h-5 text-purple-500" />
               Zod State Verification Schema
             </h4>
@@ -81,7 +81,7 @@ export default function DocModal({ isOpen, onClose }) {
           </div>
 
           <div>
-            <h4 className="font-display font-black uppercase text-base flex items-center gap-1.5 border-b-2 border-black dark:border-white pb-1">
+            <h4 className="font-bold uppercase text-base flex items-center gap-1.5 border-b-2 border-black dark:border-white pb-1">
               <Zap className="w-5 h-5 text-pink-500" />
               API Integration Guide
             </h4>

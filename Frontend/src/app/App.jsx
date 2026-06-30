@@ -6,6 +6,8 @@ import HeroSection from './components/HeroSection';
 import ArenaWorkspace from './components/ArenaWorkspace';
 import DocModal from './components/DocModal';
 import Footer from './components/Footer';
+import Register from '../pages/Register';
+import Login from '../pages/Login';
 import axios from 'axios';
 
 // API Client configuration
@@ -17,6 +19,9 @@ const API = axios.create({
 });
 
 export default function App() {
+  // Page routing state: 'home' | 'login' | 'register'
+  const [currentPage, setCurrentPage] = useState('home');
+
   const [theme, setTheme] = useState(() => {
     const saved = localStorage.getItem('theme');
     return saved || 'light';
@@ -24,6 +29,16 @@ export default function App() {
 
   const [isDocOpen, setIsDocOpen] = useState(false);
   const [showArenaPreview, setShowArenaPreview] = useState(false);
+
+  // Authentication states
+  const [isAuthenticated, setIsAuthenticated] = useState(() => {
+    return localStorage.getItem('isAuthenticated') === 'true';
+  });
+  
+  const [user, setUser] = useState(() => {
+    const saved = localStorage.getItem('user');
+    return saved ? JSON.parse(saved) : null;
+  });
 
   // Connection states
   const [backendStatus, setBackendStatus] = useState('checking');
@@ -66,6 +81,58 @@ export default function App() {
     setTheme(prev => (prev === 'dark' ? 'light' : 'dark'));
   };
 
+  // Auth Operations
+  const handleRegister = (username, email, password) => {
+    // Save registered user details in local storage mock database
+    const newUser = { username, email, password };
+    localStorage.setItem('registered_user', JSON.stringify(newUser));
+    alert('Registration successful! Please login with your credentials.');
+    setCurrentPage('login');
+  };
+
+  const handleLogin = (email, password) => {
+    const savedUserJson = localStorage.getItem('registered_user');
+    let registeredUser = null;
+
+    if (savedUserJson) {
+      registeredUser = JSON.parse(savedUserJson);
+    }
+
+    // Validate against mock database, fallback to creating a session if database is empty for easy testing
+    if (registeredUser) {
+      if (registeredUser.email === email && registeredUser.password === password) {
+        const loggedInUser = { username: registeredUser.username, email };
+        setIsAuthenticated(true);
+        setUser(loggedInUser);
+        localStorage.setItem('isAuthenticated', 'true');
+        localStorage.setItem('user', JSON.stringify(loggedInUser));
+        setShowArenaPreview(true); // Open the arena automatically on login
+        setCurrentPage('home');
+      } else {
+        alert('Invalid email or password. Please try again.');
+      }
+    } else {
+      // Direct session generation if no user is registered yet (for developer ease)
+      const username = email.split('@')[0];
+      const loggedInUser = { username, email };
+      setIsAuthenticated(true);
+      setUser(loggedInUser);
+      localStorage.setItem('isAuthenticated', 'true');
+      localStorage.setItem('user', JSON.stringify(loggedInUser));
+      setShowArenaPreview(true);
+      setCurrentPage('home');
+    }
+  };
+
+  const handleLogout = () => {
+    setIsAuthenticated(false);
+    setUser(null);
+    localStorage.removeItem('isAuthenticated');
+    localStorage.removeItem('user');
+    setShowArenaPreview(false);
+    setCurrentPage('home');
+  };
+
   // Run the AI Duel
   const handleDuel = async (e) => {
     e.preventDefault();
@@ -89,6 +156,32 @@ export default function App() {
     }
   };
 
+  // RENDER CONTROLLER
+  if (currentPage === 'register') {
+    return (
+      <Register 
+        theme={theme}
+        onToggleTheme={toggleTheme}
+        onOpenDoc={() => setIsDocOpen(true)}
+        onNavigate={setCurrentPage}
+        onRegister={handleRegister}
+      />
+    );
+  }
+
+  if (currentPage === 'login') {
+    return (
+      <Login 
+        theme={theme}
+        onToggleTheme={toggleTheme}
+        onOpenDoc={() => setIsDocOpen(true)}
+        onNavigate={setCurrentPage}
+        onLogin={handleLogin}
+      />
+    );
+  }
+
+  // DEFAULT: Home Page view
   return (
     <div className="min-h-screen bg-grid-paper flex flex-col relative overflow-hidden transition-colors duration-300">
       {/* Neo-Brutalist Wave Canvas Background */}
@@ -98,13 +191,18 @@ export default function App() {
       <div className="absolute top-[8%] left-[10%] w-16 h-0.5 bg-black dark:bg-white hidden xl:block" />
       <div className="absolute top-[18%] right-[8%] w-24 h-0.5 bg-black dark:bg-white hidden xl:block" />
 
-      {/* Header / Navbar - with 2-way data binding triggers */}
+      {/* Header / Navbar - with controlled authentication data bindings */}
       <Navbar 
         theme={theme}
         onToggleTheme={toggleTheme}
         onOpenDoc={() => setIsDocOpen(true)}
         showArenaPreview={showArenaPreview}
         onToggleArena={setShowArenaPreview}
+        isAuthPage={false}
+        isAuthenticated={isAuthenticated}
+        user={user}
+        onLogout={handleLogout}
+        onNavigate={setCurrentPage}
       />
 
       {/* Main Content Area */}
@@ -129,7 +227,7 @@ export default function App() {
         {/* Hero Branding Section */}
         <HeroSection />
 
-        {/* Modular Arena Workspace - with full 2-way data binding */}
+        {/* Modular Arena Workspace - with authentication locked/unlocked state */}
         <ArenaWorkspace 
           show={showArenaPreview}
           onClose={() => setShowArenaPreview(false)}
@@ -139,6 +237,8 @@ export default function App() {
           isLoading={isLoading}
           battleResult={battleResult}
           errorMessage={errorMessage}
+          isAuthenticated={isAuthenticated}
+          onNavigate={setCurrentPage}
         />
 
         {/* Informative Grid Cards in brutalist style */}
@@ -181,7 +281,7 @@ export default function App() {
       {/* Footer copyright */}
       <Footer />
 
-      {/* Documentation Modal - with controlled 2-way close binding */}
+      {/* Documentation Modal - with monospace spacing */}
       <DocModal 
         isOpen={isDocOpen} 
         onClose={() => setIsDocOpen(false)} 
