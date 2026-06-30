@@ -6,30 +6,10 @@ import {z} from "zod"
 import { createAgent, providerStrategy } from "langchain";
 
 
-// type JUDGEMENT= {
-//     winner:"solution_1" | "solution_2";
-//     solution_1_score: number;
-//     solution_2_score: number;
-// }
 
-// type AIDUELSTATE = {
-//     messages: typeof MessagesValue,
-//     solution_1:string;
-//     solution_2:string;
-//     judgement: JUDGEMENT ;
-// }
 
-// const state:AIDUELSTATE = ({ //data state hi help se ek node se dusri node pr jata
-//     messages:MessagesValue ,
-//     solution_1:"",
-//     solution_2:"",
-//     judgement: {
-//         winner:"solution_1",
-//         solution_1_score:0,
-//         solution_2_score:0
-//     }
-// })
 
+//schema describe the data blueprint structure and 
 const State= new StateSchema({
     messages:MessagesValue,
     solution_1: new ReducedValue(z.string().default(""), {
@@ -55,9 +35,13 @@ const State= new StateSchema({
         reducer:(_current,next) => next,
     }
 )
-})
+});
 
-const solutionNode = async (state: typeof State.State) => {
+
+
+
+
+const solutionNode: GraphNode<typeof State>  = async (state: typeof State.State) => {
   try {
     const mistralPromise = mistralModel.invoke(state.messages);
 
@@ -76,20 +60,32 @@ const solutionNode = async (state: typeof State.State) => {
       coherePromise,
     ]);
 
-    console.dir(cohereResponse, { depth: null }); // now safe, after it's defined
+    // console.dir(cohereResponse, { depth: null }); // now safe, after it's defined
 
     const cohereText =
      cohereResponse.message?.content?.find(
         (block: any) => block.type === "text"
       )?.text ?? "";
 
+
+    const solution_1 = String(mistralResponse.content ?? "").trim();
+    const solution_2 = String(cohereText ?? "").trim();
+
     console.log("Mistral:", mistralResponse.content);
     console.log("Cohere:", cohereText);
 
+    if (!solution_1 || !solution_2) {
+      console.warn("Warning: one of the solutions came back empty.", {
+        solution_1_empty: !solution_1,
+        solution_2_empty: !solution_2,
+      });
+    }
+
+
     return {
       messages: state.messages,
-      solution_1: String(mistralResponse.content),
-      solution_2: cohereText,
+      solution_1,
+      solution_2,
     };
   } catch (err) {
     console.error("Solution node error:", err);
@@ -97,9 +93,17 @@ const solutionNode = async (state: typeof State.State) => {
   }
 };
 
-const judgeNode = async (state: typeof State.State) => {
+
+
+
+const judgeNode: GraphNode<typeof State> = async (state: typeof State.State) => {
     try{
     const {solution_1, solution_2} = state;
+
+    if (!solution_1 || !solution_2) {
+      console.error("Judge node received empty solution(s):", { solution_1, solution_2 });
+    }
+
     const judge = createAgent({
         model:geminiModel,
         tools: [],
@@ -109,7 +113,7 @@ const judgeNode = async (state: typeof State.State) => {
         }))
     })
 
-    console.log("invoking judge with state",state)
+    // console.log("invoking judge with state",state)
     const problemText = state.messages[0].content as string;
 
     const judgeResponse = await judge.invoke({
@@ -121,7 +125,22 @@ const judgeNode = async (state: typeof State.State) => {
         ]
     })
 
+    // Log the FULL response so we can see if structuredResponse is actually populated
+    console.log("Full judge response:", JSON.stringify(judgeResponse, null, 2));
+
+
     const result = judgeResponse.structuredResponse;
+
+    if (!result || typeof result.solution_1_score !== "number" || typeof result.solution_2_score !== "number") {
+      console.error(
+        "Judge did not return a valid structured response. Falling back to default scores.",
+        judgeResponse
+      );
+      // Returning undefined here would trigger the Zod default (0,0) silently.
+      // We throw instead so the failure is visible rather than masked.
+      throw new Error("Judge node failed to produce a valid structured response.");
+    }
+
 
     console.log("Judge result:", result);
 
@@ -144,6 +163,7 @@ const graph = new StateGraph(State)
     .addEdge("solution",END)
     .compile()
 
+    
 //graph hmesha start node pr invoke hota hai jo solution node k pass jata n solution node modifies it
 export default async function(userMessage:string){
     const result = await graph.invoke({
