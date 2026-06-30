@@ -11,6 +11,7 @@ export default function Login({
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [focusedField, setFocusedField] = useState('');
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -20,6 +21,14 @@ export default function Login({
     }
     setError('');
     onLogin(email, password);
+  };
+
+  const getLabelClass = (fieldName) => {
+    const base = "block font-display font-bold uppercase tracking-wider text-[10px] mb-1.5 transition-all duration-150";
+    if (focusedField === fieldName) {
+      return `${base} bg-white text-black px-1.5 py-0.5 border border-black inline-block dark:border-white`;
+    }
+    return `${base} text-slate-700 dark:text-slate-300`;
   };
 
   return (
@@ -74,57 +83,33 @@ export default function Login({
               <form onSubmit={handleSubmit} className="space-y-4">
                 {/* Email / Username */}
                 <div>
-                  <label className="block font-display font-bold uppercase tracking-wider text-[10px] text-slate-700 dark:text-slate-300 mb-1.5 group-focus-within:text-white transition-colors duration-150">
+                  <label className={getLabelClass('email')}>
                     Email Address
                   </label>
                   <input
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
+                    onFocus={() => setFocusedField('email')}
+                    onBlur={() => setFocusedField('')}
                     placeholder="name@example.com"
-                    className="
-                      w-full
-                      px-3 py-2.5
-                      bg-white dark:bg-slate-950
-                      text-black dark:text-white
-                      border-[2.5px] border-black dark:border-white
-                      text-xs font-semibold
-                      transition-all duration-150
-                      focus:outline-none
-                      focus:bg-white
-                      focus:text-black
-                      focus:font-mono
-                      dark:focus:bg-white
-                      dark:focus:text-black
-                    "
+                    className="w-full px-3 py-2.5 bg-white dark:bg-slate-950 text-black dark:text-white border-[2.5px] border-black dark:border-white text-xs font-semibold focus:outline-none focus:bg-white focus:text-black focus:font-mono dark:focus:bg-white dark:focus:text-black"
                   />
                 </div>
 
                 {/* Password */}
                 <div>
-                  <label className="block font-display font-bold uppercase tracking-wider text-[10px] text-slate-700 dark:text-slate-300 mb-1.5 group-focus-within:text-white transition-colors duration-150">
+                  <label className={getLabelClass('password')}>
                     Password
                   </label>
                   <input
                     type="password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
+                    onFocus={() => setFocusedField('password')}
+                    onBlur={() => setFocusedField('')}
                     placeholder="••••••••"
-                    className="
-                      w-full
-                      px-3 py-2.5
-                      bg-white dark:bg-slate-950
-                      text-black dark:text-white
-                      border-[2.5px] border-black dark:border-white
-                      text-xs font-semibold
-                      transition-all duration-150
-                      focus:outline-none
-                      focus:bg-white
-                      focus:text-black
-                      focus:font-mono
-                      dark:focus:bg-white
-                      dark:focus:text-black
-                    "
+                    className="w-full px-3 py-2.5 bg-white dark:bg-slate-950 text-black dark:text-white border-[2.5px] border-black dark:border-white text-xs font-semibold focus:outline-none focus:bg-white focus:text-black focus:font-mono dark:focus:bg-white dark:focus:text-black"
                   />
                 </div>
 

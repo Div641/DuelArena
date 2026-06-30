@@ -1,5 +1,5 @@
-import React from 'react';
-import { Sun, Moon, BookOpen } from 'lucide-react';
+import React, { useState } from 'react';
+import { Sun, Moon, BookOpen, User, LogOut } from 'lucide-react';
 import GithubIcon from './GithubIcon';
 
 export default function Navbar({ 
@@ -14,6 +14,8 @@ export default function Navbar({
   onLogout,
   onNavigate
 }) {
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+
   return (
     <header className="sticky top-0 z-40 w-full bg-transparent border-b-3 border-black dark:border-white transition-all duration-300">
       <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
@@ -52,7 +54,7 @@ export default function Navbar({
         {/* Right: navigation buttons & theme selection button */}
         <div className="flex items-center gap-3">
           {isAuthPage ? (
-            // On Auth pages, display Home button (takes user back to Home page)
+            // On Auth or Arena pages, display Home button (takes user back to Home page)
             <button
               onClick={() => onNavigate('home')}
               className="px-4 py-2 text-xs font-black uppercase tracking-wider bg-white dark:bg-slate-900 text-black dark:text-white border-[3px] border-black dark:border-white shadow-[4px_4px_0px_0px_#000] dark:shadow-[4px_4px_0px_0px_#fff] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_#000] dark:hover:shadow-[6px_6px_0px_0px_#fff] cursor-pointer transition-all duration-150"
@@ -60,22 +62,13 @@ export default function Navbar({
               Home
             </button>
           ) : isAuthenticated ? (
-            // On Home page, if Authenticated, display Workspace toggle, user tag, and Logout button
+            // On Home page, if Authenticated, display Enter Arena button (takes them to 'arena')
             <>
-              <span className="hidden sm:inline px-3 py-2 text-[10px] font-black bg-white dark:bg-slate-900 text-black dark:text-white border-2 border-black dark:border-white shadow-[2px_2px_0px_0px_#000] dark:shadow-[2px_2px_0px_0px_#fff]">
-                👤 {user?.username}
-              </span>
               <button
-                onClick={() => onToggleArena(!showArenaPreview)}
+                onClick={() => onNavigate('arena')}
                 className="px-4 py-2 text-xs font-black uppercase tracking-wider bg-[#5CA1E6] text-black border-[3px] border-black dark:border-white shadow-[4px_4px_0px_0px_#000] dark:shadow-[4px_4px_0px_0px_#fff] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_#000] dark:hover:shadow-[6px_6px_0px_0px_#fff] cursor-pointer transition-all duration-150"
               >
-                {showArenaPreview ? 'Hide Arena' : 'Enter Arena'}
-              </button>
-              <button
-                onClick={onLogout}
-                className="px-3 py-2 text-xs font-black uppercase tracking-wider bg-rose-400 text-black border-[3px] border-black dark:border-white shadow-[4px_4px_0px_0px_#000] dark:shadow-[4px_4px_0px_0px_#fff] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_#000] dark:hover:shadow-[6px_6px_0px_0px_#fff] cursor-pointer transition-all duration-150"
-              >
-                Logout
+                Enter Arena
               </button>
             </>
           ) : (
@@ -88,6 +81,7 @@ export default function Navbar({
             </button>
           )}
 
+          {/* Theme selection toggle button */}
           <button
             onClick={onToggleTheme}
             className="p-2 bg-white dark:bg-slate-900 border-[3px] border-black dark:border-white shadow-[4px_4px_0px_0px_#000] dark:shadow-[4px_4px_0px_0px_#fff] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_#000] dark:hover:shadow-[6px_6px_0px_0px_#fff] text-black dark:text-white cursor-pointer transition-all duration-150"
@@ -95,6 +89,48 @@ export default function Navbar({
           >
             {theme === 'dark' ? <Sun className="w-4 h-4 text-amber-500 animate-spin-slow" /> : <Moon className="w-4 h-4" />}
           </button>
+
+          {/* Authenticated User profile dropdown trigger */}
+          {isAuthenticated && (
+            <div className="relative">
+              <button
+                onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                className="p-2 bg-white dark:bg-slate-900 border-[3px] border-black dark:border-white shadow-[4px_4px_0px_0px_#000] dark:shadow-[4px_4px_0px_0px_#fff] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_#000] dark:hover:shadow-[6px_6px_0px_0px_#fff] text-black dark:text-white cursor-pointer transition-all duration-150"
+                aria-label="User Profile Dropdown"
+              >
+                <User className="w-4 h-4" />
+              </button>
+              
+              {/* Dropdown Menu Popup */}
+              {isDropdownOpen && (
+                <div className="absolute right-0 mt-3 w-48 bg-white dark:bg-slate-900 border-[3px] border-black dark:border-white shadow-[6px_6px_0px_0px_#000] dark:shadow-[6px_6px_0px_0px_#fff] py-2 z-50 text-left font-mono">
+                  <div className="px-4 py-1.5 border-b-2 border-black dark:border-white text-[9px] uppercase font-black text-slate-500 dark:text-slate-400">
+                    User ID / Name
+                  </div>
+                  <div className="px-4 py-2 text-xs font-black text-black dark:text-white truncate">
+                    {user?.username || 'Guest'}
+                  </div>
+                  {user?.email && (
+                    <div className="px-4 pb-2 text-[10px] font-semibold text-slate-400 dark:text-slate-500 truncate">
+                      {user?.email}
+                    </div>
+                  )}
+                  <div className="border-t-2 border-black dark:border-white my-1" />
+                  <button
+                    onClick={() => {
+                      setIsDropdownOpen(false);
+                      onLogout();
+                    }}
+                    className="w-full text-left px-4 py-2.5 text-xs font-black uppercase tracking-wider hover:bg-[#5CA1E6] hover:text-black flex items-center gap-2 cursor-pointer transition"
+                  >
+                    <LogOut className="w-3.5 h-3.5 text-rose-500" />
+                    Logout
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
+
         </div>
       </div>
     </header>

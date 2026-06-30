@@ -28,4 +28,11 @@ app.post("/use-graph", async (req, res) => {
     }
 })
 
+app.post("/logout", (req, res) => {
+    res.status(200).json({
+        status: 'success',
+        message: 'Logged out successfully'
+    });
+})
+
 export default app
