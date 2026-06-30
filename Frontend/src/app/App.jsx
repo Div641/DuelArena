@@ -46,6 +46,7 @@ export default function App() {
   const [isLoading, setIsLoading] = useState(false);
   const [battleResult, setBattleResult] = useState(null);
   const [errorMessage, setErrorMessage] = useState('');
+  const [activeQuestion, setActiveQuestion] = useState('');
 
   // Check backend health on load
   useEffect(() => {
@@ -133,6 +134,7 @@ export default function App() {
       localStorage.removeItem('isAuthenticated');
       localStorage.removeItem('user');
       setPromptInput('');
+      setActiveQuestion('');
       setBattleResult(null);
       setErrorMessage('');
       setCurrentPage('home');
@@ -144,12 +146,15 @@ export default function App() {
     e.preventDefault();
     if (!promptInput.trim()) return;
 
+    const question = promptInput;
+    setPromptInput(''); // Empty the input box immediately
+    setActiveQuestion(question); // Save active question to show at top
     setIsLoading(true);
     setErrorMessage('');
     setBattleResult(null);
 
     try {
-      const response = await API.post('/use-graph', { message: promptInput });
+      const response = await API.post('/use-graph', { message: question });
       setBattleResult(response.data);
     } catch (err) {
       console.error(err);
@@ -202,6 +207,7 @@ export default function App() {
         isLoading={isLoading}
         battleResult={battleResult}
         errorMessage={errorMessage}
+        activeQuestion={activeQuestion}
       />
     );
   }

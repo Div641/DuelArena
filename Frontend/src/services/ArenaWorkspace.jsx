@@ -14,7 +14,8 @@ export default function ArenaWorkspace({
   onDuelSubmit,
   isLoading,
   battleResult,
-  errorMessage
+  errorMessage,
+  activeQuestion
 }) {
 
   return (
@@ -39,7 +40,7 @@ export default function ArenaWorkspace({
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4 border-[3px] border-black dark:border-white bg-[#1E1E22] p-4 shadow-[4px_4px_0px_0px_#5CA1E6]">
           <div className="flex items-center gap-2">
             <Terminal className="w-5 h-5 text-[#5CA1E6]" />
-            <h2 className="font-display font-black text-lg uppercase tracking-wider text-white">
+            <h2 className="font-sans font-black text-lg uppercase tracking-wider text-white">
               Duel Arena Colosseum
             </h2>
           </div>
@@ -47,6 +48,18 @@ export default function ArenaWorkspace({
             LOGGED IN AS: <span className="text-[#5CA1E6]">{user?.username || 'GUEST'}</span>
           </div>
         </div>
+
+        {/* Active Question Display - Shows at the top as requested */}
+        {activeQuestion && (
+          <div className="p-4 border-[3px] border-slate-800 bg-[#121214] text-slate-350 font-mono text-sm shadow-[4px_4px_0px_0px_#5CA1E6] flex flex-col gap-1.5 animate-fade-in">
+            <span className="text-[10px] font-black uppercase text-[#5CA1E6] tracking-widest font-sans">
+              Active Duel Prompt
+            </span>
+            <span className="text-white text-sm font-semibold">
+              "{activeQuestion}"
+            </span>
+          </div>
+        )}
 
         {/* Error notification */}
         {errorMessage && (
@@ -61,7 +74,7 @@ export default function ArenaWorkspace({
             <div className="relative w-20 h-20 flex items-center justify-center border-[3px] border-white bg-black p-4 mb-4">
               <div className="text-4xl animate-bounce">⚔️</div>
             </div>
-            <p className="font-display font-black uppercase text-sm tracking-wider text-white">DUELING ENGINE RUNNING...</p>
+            <p className="font-sans font-black uppercase text-sm tracking-wider text-white">DUELING ENGINE RUNNING...</p>
             <p className="font-serif italic text-xs text-slate-400 mt-1">Mistral and Cohere are compiling code. Gemini is evaluating logic.</p>
           </div>
         )}
@@ -81,11 +94,11 @@ export default function ArenaWorkspace({
               }`}>
                 <div>
                   <div className="flex items-center justify-between mb-4 border-b border-slate-700 pb-2">
-                    <span className="text-xs font-black uppercase tracking-wider px-2 py-0.5 bg-indigo-500/10 text-indigo-400 border border-indigo-500/30">
+                    <span className="text-xs font-sans font-black uppercase tracking-wider px-2 py-0.5 bg-indigo-500/10 text-indigo-400 border border-indigo-500/30">
                       Mistral Engine
                     </span>
                     {battleResult && battleResult.judge_recommendation?.solution_1_score >= battleResult.judge_recommendation?.solution_2_score && (
-                      <span className="text-[10px] font-black text-black bg-[#5CA1E6] px-2 py-0.5 border border-black uppercase tracking-wider">
+                      <span className="text-[10px] font-sans font-black text-black bg-[#5CA1E6] px-2 py-0.5 border border-black uppercase tracking-wider">
                         🏆 WINNER
                       </span>
                     )}
@@ -110,11 +123,11 @@ export default function ArenaWorkspace({
               }`}>
                 <div>
                   <div className="flex items-center justify-between mb-4 border-b border-slate-700 pb-2">
-                    <span className="text-xs font-black uppercase tracking-wider px-2 py-0.5 bg-pink-500/10 text-pink-400 border border-pink-500/30">
+                    <span className="text-xs font-sans font-black uppercase tracking-wider px-2 py-0.5 bg-pink-500/10 text-pink-400 border border-pink-500/30">
                       Cohere Engine
                     </span>
                     {battleResult && battleResult.judge_recommendation?.solution_2_score >= battleResult.judge_recommendation?.solution_1_score && (
-                      <span className="text-[10px] font-black text-black bg-[#5CA1E6] px-2 py-0.5 border border-black uppercase tracking-wider">
+                      <span className="text-[10px] font-sans font-black text-black bg-[#5CA1E6] px-2 py-0.5 border border-black uppercase tracking-wider">
                         🏆 WINNER
                       </span>
                     )}
@@ -137,7 +150,7 @@ export default function ArenaWorkspace({
             <div className="p-6 bg-[#121214] border-[3px] border-black dark:border-white shadow-[6px_6px_0px_0px_#000] dark:shadow-[6px_6px_0px_0px_#fff] w-full flex flex-col justify-between">
               <div>
                 <div className="flex items-center justify-between mb-4 border-b border-slate-750 pb-2">
-                  <span className="text-xs font-black uppercase tracking-wider px-2 py-0.5 bg-purple-500/10 text-purple-400 border border-purple-500/30 flex items-center gap-1.5">
+                  <span className="text-xs font-sans font-black uppercase tracking-wider px-2 py-0.5 bg-purple-500/10 text-purple-400 border border-purple-500/30 flex items-center gap-1.5">
                     <Award className="w-3.5 h-3.5 text-purple-400" />
                     Gemini Arbitrator Verdict
                   </span>
@@ -149,7 +162,7 @@ export default function ArenaWorkspace({
                 {battleResult ? (
                   <div className="space-y-4 font-mono text-xs text-slate-300 leading-relaxed">
                     <div className="p-3 bg-black border border-slate-850 rounded text-slate-300">
-                      <p className="font-black text-white text-sm uppercase mb-2">🏆 Grading Analysis:</p>
+                      <p className="font-sans font-black text-white text-sm uppercase mb-2">🏆 Grading Analysis:</p>
                       <ul className="list-disc pl-5 space-y-1">
                         <li>
                           Mistral Score: <strong className="text-[#5CA1E6]">{battleResult.judge_recommendation?.solution_1_score} / 10</strong>.
@@ -157,7 +170,7 @@ export default function ArenaWorkspace({
                         <li>
                           Cohere Score: <strong className="text-[#5CA1E6]">{battleResult.judge_recommendation?.solution_2_score} / 10</strong>.
                         </li>
-                        <li className="mt-2 text-white font-semibold">
+                        <li className="mt-2 text-white font-semibold font-sans">
                           Winner: {
                             battleResult.judge_recommendation?.solution_1_score > battleResult.judge_recommendation?.solution_2_score ? 'Mistral' :
                             battleResult.judge_recommendation?.solution_2_score > battleResult.judge_recommendation?.solution_1_score ? 'Cohere' :
@@ -181,19 +194,19 @@ export default function ArenaWorkspace({
       </div>
 
       {/* Floating Bottom Chat / Question Area */}
-      <div className="fixed bottom-0 left-0 right-0 p-4 bg-black border-t-3 border-black dark:border-white z-30">
+      <div className="fixed bottom-0 left-0 right-0 p-4 bg-black border-t-3 border-slate-800 z-30">
         <form onSubmit={onDuelSubmit} className="max-w-4xl mx-auto flex gap-3">
           <input
             type="text"
             value={promptInput}
             onChange={(e) => onPromptChange(e.target.value)} // 2-way binding
             placeholder="Ask your coding question (e.g. Write a quicksort in Python)..."
-            className="flex-1 px-4 py-3.5 bg-[#121214] text-white border-[3px] border-black dark:border-white focus:outline-none focus:bg-[#1E1E22] text-sm font-semibold rounded-none placeholder-slate-500"
+            className="flex-1 px-4 py-3.5 bg-[#121214] text-white border-[3px] border-slate-800 focus:border-white focus:outline-none focus:bg-[#1E1E22] text-sm font-semibold rounded-none placeholder-slate-500 font-sans"
             disabled={isLoading}
           />
           <button
             type="submit"
-            className="px-6 bg-[#5CA1E6] text-black border-[3px] border-black dark:border-white shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(255,255,255,1)] active:translate-x-[0px] active:translate-y-[0px] cursor-pointer font-black text-xs uppercase tracking-wider flex items-center gap-1.5 transition-all duration-150"
+            className="px-6 bg-[#5CA1E6] text-black border-[3px] border-black shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(255,255,255,1)] active:translate-x-[0px] active:translate-y-[0px] cursor-pointer font-sans font-black text-xs uppercase tracking-wider flex items-center gap-1.5 transition-all duration-150"
             disabled={isLoading}
           >
             <Send className="w-4 h-4 text-black" />

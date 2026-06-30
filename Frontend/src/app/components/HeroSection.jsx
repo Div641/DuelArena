@@ -63,12 +63,12 @@ export default function HeroSection() {
           </p>
         </div>
 
-        {/* Right Column Accent Text ("Photo Graph / Video Edit" in image) */}
+        {/* Right Column Accent Text */}
         <div className="lg:col-span-3 text-right hidden lg:block">
-          <h4 className="font-serif text-3xl font-normal leading-tight text-black dark:text-white">
+          <h4 className="font-sans text-2xl font-bold leading-tight text-black dark:text-white">
             State Graph
           </h4>
-          <h4 className="font-serif text-3xl italic font-normal text-slate-600 dark:text-slate-400">
+          <h4 className="font-sans text-2xl italic font-semibold text-slate-600 dark:text-slate-400">
             Workflow
           </h4>
           <div className="w-16 h-1 bg-[#5CA1E6] mt-4 ml-auto border border-black dark:border-white" />
