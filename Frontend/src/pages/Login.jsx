@@ -24,7 +24,7 @@ export default function Login({
   };
 
   const getLabelClass = (fieldName) => {
-    const base = "block font-display font-bold uppercase tracking-wider text-[10px] mb-1.5 transition-all duration-150";
+    const base = "block font-sans font-bold uppercase tracking-wider text-[10px] mb-1.5 transition-all duration-150";
     if (focusedField === fieldName) {
       return `${base} bg-white text-black px-1.5 py-0.5 border border-black inline-block dark:border-white`;
     }
